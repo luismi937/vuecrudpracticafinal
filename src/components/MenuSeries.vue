@@ -15,7 +15,7 @@
 
 <script setup>
 import { ref, onMounted } from 'vue'
-import SeriesService from '../services/SeriesService'
+import SeriesService from '../services/SeriesService.js' 
 
 const series = ref([])
 
