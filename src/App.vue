@@ -1,7 +1,19 @@
 <template>
-  <div class="container">
-    <h1 class="text-center my-4">📺 Gestor de Series y Personajes</h1>
-    <MenuSeries />
-    <router-view />
+  <div id="app">
+    <router-view></router-view>
   </div>
 </template>
+
+<script>
+export default {
+  name: 'App'
+};
+</script>
+
+<style>
+body {
+  font-family: Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+}
+</style>

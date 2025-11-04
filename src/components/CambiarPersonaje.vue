@@ -1,66 +1,89 @@
 <template>
-  <div class="container mt-4">
-    <h3>Cambiar personaje</h3>
-    <form @submit.prevent="cambiarPersonaje">
-      <div class="mb-3">
-        <label class="form-label">Nombre del personaje</label>
-        <input type="text" class="form-control" v-model="personaje.nombre" required>
-      </div>
+  <div class="form-container">
+    <h2>Modificar Personaje</h2>
+    <form @submit.prevent="handleSubmit">
+      <label>Nombre:</label>
+      <input v-model="nombre" type="text" required />
 
-      <div class="mb-3">
-        <label class="form-label">Serie</label>
-        <select class="form-select" v-model="personaje.serieId" required>
-          <option v-for="serie in series" :key="serie.id" :value="serie.id">
-            {{ serie.nombre }}
-          </option>
-        </select>
-      </div>
+      <label>Serie:</label>
+      <select v-model="serieId" required>
+        <option v-for="serie in series" :key="serie.id" :value="serie.id">{{ serie.nombre }}</option>
+      </select>
 
-      <button type="submit" class="btn btn-primary">Cambiar</button>
+      <button type="submit">Guardar Cambios</button>
     </form>
   </div>
 </template>
 
-<script setup>
-import { ref, onMounted } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
-import Swal from 'sweetalert2'
-import SeriesService from '../services/SeriesService.js'
+<script>
+import SeriesServices from '../services/SeriesServices.js';
 
-const route = useRoute()
-const router = useRouter()
+export default {
+  name: "CambiarPersonaje",
+  props: {
+    idPersonaje: Number
+  },
+  data() {
+    return {
+      nombre: '',
+      serieId: '',
+      series: []
+    }
+  },
+  async mounted() {
+    this.series = await SeriesServices.getSeries();
 
-const personaje = ref({ id: 0, nombre: '', serieId: null })
-const series = ref([])
-
-onMounted(async () => {
-  // Cargar series para el select
-  series.value = await SeriesService.getSeries()
-
-  // Cargar datos del personaje por id
-  const id = route.params.id
-  const p = await SeriesService.getPersonajeById(id)
-  if (p) {
-    personaje.value = p
-  } else {
-    Swal.fire('Error', 'Personaje no encontrado', 'error')
-    router.push('/') // Redirige al Home si no existe
-  }
-})
-
-const cambiarPersonaje = async () => {
-  const result = await Swal.fire({
-    title: '¿Seguro que quieres cambiar este personaje?',
-    icon: 'warning',
-    showCancelButton: true,
-    confirmButtonText: 'Sí, cambiar',
-    cancelButtonText: 'Cancelar'
-  })
-
-  if (result.isConfirmed) {
-    await SeriesService.updatePersonaje(personaje.value)
-    Swal.fire('Listo', 'Personaje cambiado', 'success')
-    router.push('/serie/' + personaje.value.serieId)
+    if(this.idPersonaje) {
+      const personaje = await SeriesServices.getPersonajeById(this.idPersonaje);
+      this.nombre = personaje.nombre;
+      this.serieId = personaje.serieId;
+    }
+  },
+  methods: {
+    async handleSubmit() {
+      try {
+        await SeriesServices.updatePersonaje(this.idPersonaje, { nombre: this.nombre, serieId: this.serieId });
+        alert("Personaje modificado!");
+        this.$router.push('/menu-series');
+      } catch (err) {
+        console.error(err);
+        alert("Error al modificar personaje");
+      }
+    }
   }
 }
 </script>
+
+<style scoped>
+.form-container {
+  max-width: 400px;
+  margin: 2rem auto;
+  padding: 2rem;
+  border-radius: 8px;
+  background-color: #f4f4f4;
+  box-shadow: 0 0 10px rgba(0,0,0,0.1);
+}
+label {
+  display: block;
+  margin: 0.5rem 0 0.2rem;
+  font-weight: bold;
+}
+input, select {
+  width: 100%;
+  padding: 0.5rem;
+  margin-bottom: 1rem;
+  border-radius: 4px;
+  border: 1px solid #ccc;
+}
+button {
+  padding: 0.7rem 1.5rem;
+  background-color: #27ae60;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+button:hover {
+  background-color: #1e8449;
+}
+</style>

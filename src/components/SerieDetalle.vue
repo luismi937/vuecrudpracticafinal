@@ -1,32 +1,81 @@
 <template>
-  <div class="container mt-4">
-    <h3>Serie: {{ serie.nombre }}</h3>
-    <router-link :to="'/menu-series'" class="btn btn-secondary mb-3">Volver</router-link>
+  <div v-if="serie" class="serie-container">
+    <h2>{{ serie.nombre }}</h2>
 
-    <h4>Personajes</h4>
-    <ul class="list-group mb-3">
-      <li v-for="p in personajes" :key="p.id" class="list-group-item d-flex justify-content-between align-items-center">
-        {{ p.nombre }}
-        <router-link :to="'/cambiar-personaje/' + p.id" class="btn btn-sm btn-warning">Modificar</router-link>
+    <ul class="personajes-list">
+      <li v-for="personaje in serie.personajes" :key="personaje.id">
+        <span>{{ personaje.nombre }}</span>
+        <router-link :to="`/cambiar-personaje/${personaje.id}/${serie.id}`">
+          <button class="change-btn">Cambiar Serie</button>
+        </router-link>
       </li>
     </ul>
+  </div>
 
-    <router-link :to="'/serie/' + serie.id + '/nuevo-personaje'" class="btn btn-primary">Nuevo personaje</router-link>
+  <div v-else class="loading">
+    <p>Cargando serie...</p>
   </div>
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
-import { useRoute } from 'vue-router'
-import SeriesService from '../services/SeriesService.js'
+import { ref, onMounted } from 'vue';
+import SeriesServices from '../services/SeriesServices.js';
+import { useRoute } from 'vue-router';
 
-const route = useRoute()
-const serie = ref({})
-const personajes = ref([])
+const route = useRoute();
+const serieId = route.params.id;
+
+const serie = ref(null);
 
 onMounted(async () => {
-  const id = route.params.id
-  serie.value = await SeriesService.getSerieById(id)
-  personajes.value = await SeriesService.getPersonajesBySerie(id)
-})
+  try {
+    const todasSeries = await SeriesServices.getSeries();
+    serie.value = todasSeries.find(s => s.id == serieId);
+  } catch (error) {
+    console.error("Error al cargar la serie:", error);
+  }
+});
 </script>
+
+<style scoped>
+.serie-container {
+  max-width: 600px;
+  margin: 40px auto;
+  padding: 20px;
+  background: #f5f5f5;
+  border-radius: 12px;
+  box-shadow: 0 6px 12px rgba(0,0,0,0.1);
+  text-align: center;
+}
+
+.personajes-list {
+  list-style: none;
+  padding: 0;
+  margin-top: 20px;
+}
+
+.personajes-list li {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 10px 0;
+  padding: 10px;
+  border-bottom: 1px solid #ddd;
+}
+
+.change-btn {
+  background-color: #74ebd5;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  color: #fff;
+  font-weight: bold;
+  transition: 0.3s;
+}
+
+.change-btn:hover {
+  background-color: #5ac1b8;
+  transform: translateY(-2px);
+}
+</style>
