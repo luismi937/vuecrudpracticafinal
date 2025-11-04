@@ -1,11 +1,21 @@
 import { createApp } from 'vue'
 import App from './App.vue'
-import router from './Router'
-import registerGlobalComponents from './Global'
-import 'bootstrap/dist/css/bootstrap.min.css'
-import 'bootstrap'
 
+// Importamos el router
+import router from './Router'
+
+// Importamos el archivo global donde registramos componentes globales
+import './Global.js'
+
+// Importamos Bootstrap CSS y JS
+import 'bootstrap/dist/css/bootstrap.min.css'
+import 'bootstrap/dist/js/bootstrap.bundle.min.js'
+
+// Creamos la app
 const app = createApp(App)
-registerGlobalComponents(app)
+
+// Usamos el router
 app.use(router)
+
+// Montamos la app
 app.mount('#app')

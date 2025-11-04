@@ -1,78 +1,66 @@
 <template>
-  <div class="card p-3">
-    <h3 class="mb-3">Cambiar personaje de serie</h3>
-
-    <form @submit.prevent="cambiar">
-      <!-- Seleccionar personaje -->
+  <div class="container mt-4">
+    <h3>Cambiar personaje</h3>
+    <form @submit.prevent="cambiarPersonaje">
       <div class="mb-3">
-        <label class="form-label">Personaje:</label>
-        <select v-model="idPersonaje" class="form-select" required>
-          <option disabled value="">Seleccione personaje</option>
-          <option v-for="p in personajes" :key="p.idPersonaje" :value="p.idPersonaje">
-            {{ p.nombre }}
+        <label class="form-label">Nombre del personaje</label>
+        <input type="text" class="form-control" v-model="personaje.nombre" required>
+      </div>
+
+      <div class="mb-3">
+        <label class="form-label">Serie</label>
+        <select class="form-select" v-model="personaje.serieId" required>
+          <option v-for="serie in series" :key="serie.id" :value="serie.id">
+            {{ serie.nombre }}
           </option>
         </select>
       </div>
 
-      <!-- Seleccionar serie -->
-      <div class="mb-3">
-        <label class="form-label">Nueva Serie:</label>
-        <select v-model="idSerie" class="form-select" required>
-          <option disabled value="">Seleccione serie</option>
-          <option v-for="s in series" :key="s.idSerie" :value="s.idSerie">
-            {{ s.nombre }}
-          </option>
-        </select>
-      </div>
-
-      <button type="submit" class="btn btn-warning w-100">Cambiar de serie</button>
+      <button type="submit" class="btn btn-primary">Cambiar</button>
     </form>
   </div>
 </template>
 
 <script setup>
 import { ref, onMounted } from 'vue'
-import SeriesService from '../services/SeriesService.js'  // ✅ import correcto
-import Swal from 'sweetalert2'                             // ✅ import correcto
+import { useRoute, useRouter } from 'vue-router'
+import Swal from 'sweetalert2'
+import SeriesService from '../services/SeriesService.js'
 
-// Variables reactivas
-const personajes = ref([])
+const route = useRoute()
+const router = useRouter()
+
+const personaje = ref({ id: 0, nombre: '', serieId: null })
 const series = ref([])
-const idPersonaje = ref('')
-const idSerie = ref('')
 
-// Cargar datos al montar el componente
 onMounted(async () => {
-  personajes.value = await SeriesService.getPersonajes()
+  // Cargar series para el select
   series.value = await SeriesService.getSeries()
+
+  // Cargar datos del personaje por id
+  const id = route.params.id
+  const p = await SeriesService.getPersonajeById(id)
+  if (p) {
+    personaje.value = p
+  } else {
+    Swal.fire('Error', 'Personaje no encontrado', 'error')
+    router.push('/') // Redirige al Home si no existe
+  }
 })
 
-// Método para cambiar el personaje de serie
-const cambiar = async () => {
-  if (!idPersonaje.value || !idSerie.value) {
-    Swal.fire('Error', 'Debe seleccionar personaje y serie', 'error')
-    return
-  }
-
-  const confirm = await Swal.fire({
-    title: '¿Confirmar cambio?',
-    text: 'El personaje cambiará a otra serie.',
+const cambiarPersonaje = async () => {
+  const result = await Swal.fire({
+    title: '¿Seguro que quieres cambiar este personaje?',
     icon: 'warning',
     showCancelButton: true,
     confirmButtonText: 'Sí, cambiar',
     cancelButtonText: 'Cancelar'
   })
 
-  if (confirm.isConfirmed) {
-    await SeriesService.putCambiarPersonaje(idPersonaje.value, idSerie.value)
-    Swal.fire('Hecho', 'El personaje ha cambiado de serie.', 'success')
+  if (result.isConfirmed) {
+    await SeriesService.updatePersonaje(personaje.value)
+    Swal.fire('Listo', 'Personaje cambiado', 'success')
+    router.push('/serie/' + personaje.value.serieId)
   }
 }
 </script>
-
-<style scoped>
-.card {
-  max-width: 500px;
-  margin: 0 auto;
-}
-</style>

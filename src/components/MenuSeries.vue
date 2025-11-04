@@ -1,21 +1,17 @@
 <template>
-  <nav class="navbar navbar-expand-lg navbar-dark bg-dark mb-3">
-    <div class="container-fluid">
-      <router-link to="/" class="navbar-brand">Series</router-link>
-      <ul class="navbar-nav">
-        <li v-for="serie in series" :key="serie.idSerie" class="nav-item">
-          <router-link class="nav-link" :to="`/serie/${serie.idSerie}`">
-            {{ serie.nombre }}
-          </router-link>
-        </li>
-      </ul>
-    </div>
-  </nav>
+  <div class="container mt-4">
+    <h3>Menú de series</h3>
+    <ul class="list-group">
+      <li v-for="serie in series" :key="serie.id" class="list-group-item">
+        <router-link :to="'/serie/' + serie.id">{{ serie.nombre }}</router-link>
+      </li>
+    </ul>
+  </div>
 </template>
 
 <script setup>
 import { ref, onMounted } from 'vue'
-import SeriesService from '../services/SeriesService.js' 
+import SeriesService from '../services/SeriesService.js'
 
 const series = ref([])
 

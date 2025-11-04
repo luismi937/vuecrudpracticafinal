@@ -1,5 +1,7 @@
+import { createApp } from 'vue'
 import MenuSeries from './components/MenuSeries.vue'
 
-export default function registerGlobalComponents(app) {
-  app.component('MenuSeries', MenuSeries)
-}
+// Registramos componente global
+const app = createApp({})
+app.component('MenuSeries', MenuSeries)
+
