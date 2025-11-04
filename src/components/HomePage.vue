@@ -4,6 +4,7 @@
     <div class="button-container">
       <router-link to="/menu-series"><button class="nav-button">Menú Series</button></router-link>
       <router-link to="/nuevo-personaje"><button class="nav-button">Agregar Personaje</button></router-link>
+      <router-link to="/modificar-personaje"><button class="nav-button">Modificar Personaje</button></router-link>
     </div>
   </div>
 </template>
