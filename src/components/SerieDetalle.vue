@@ -1,4 +1,9 @@
 <template>
+  <!--
+    Componente: SerieDetalle
+    Propósito: Mostrar la información de una serie específica y la lista de sus personajes.
+    Comportamiento: Busca la serie por id en el montaje y muestra un estado de carga si aún no está disponible.
+  -->
   <div v-if="serie" class="serie-container">
     <h2>{{ serie.nombre }}</h2>
 
@@ -18,20 +23,25 @@
 </template>
 
 <script setup>
+// Componente con <script setup>.
 import { ref, onMounted } from 'vue';
 import SeriesServices from '../services/SeriesServices.js';
 import { useRoute } from 'vue-router';
 
+// Obtener parámetro de ruta (id de la serie)
 const route = useRoute();
 const serieId = route.params.id;
 
+// Estado local para la serie seleccionada
 const serie = ref(null);
 
+// Al montar, obtener todas las series y buscar la que coincida con el id
 onMounted(async () => {
   try {
     const todasSeries = await SeriesServices.getSeries();
     serie.value = todasSeries.find(s => s.id == serieId);
   } catch (error) {
+    // Mostrar en consola cualquier error de carga
     console.error("Error al cargar la serie:", error);
   }
 });

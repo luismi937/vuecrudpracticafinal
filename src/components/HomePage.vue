@@ -10,6 +10,9 @@
 </template>
 
 <script setup>
+// Componente: HomePage
+// Propósito: Página principal con enlaces de navegación hacia las secciones importantes
+// Este archivo usa la sintaxis <script setup> de Vue 3 y no necesita props ni estado local por ahora.
 </script>
 
 <style scoped>

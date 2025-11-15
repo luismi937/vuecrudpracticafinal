@@ -1,4 +1,11 @@
 <template>
+  <!--
+    Componente: CambiarPersonaje
+    Propósito: Mostrar un formulario para modificar un personaje existente.
+    Props:
+      - idPersonaje (Number): id del personaje a modificar.
+    Comportamiento: Carga las series y los datos del personaje (si se pasa id) y permite enviar los cambios.
+  -->
   <div class="form-container">
     <h2>Modificar Personaje</h2>
     <form @submit.prevent="handleSubmit">
@@ -17,7 +24,6 @@
 
 <script>
 import SeriesServices from '../services/SeriesServices.js';
-
 export default {
   name: "CambiarPersonaje",
   props: {
@@ -31,8 +37,10 @@ export default {
     }
   },
   async mounted() {
+    // Cargar todas las series al montar el componente
     this.series = await SeriesServices.getSeries();
 
+    // Si se proporciona idPersonaje, obtener los datos del personaje y rellenar el formulario
     if(this.idPersonaje) {
       const personaje = await SeriesServices.getPersonajeById(this.idPersonaje);
       this.nombre = personaje.nombre;
@@ -42,8 +50,10 @@ export default {
   methods: {
     async handleSubmit() {
       try {
+        // Enviar los cambios al servicio
         await SeriesServices.updatePersonaje(this.idPersonaje, { nombre: this.nombre, serieId: this.serieId });
         alert("Personaje modificado!");
+        // Redirigir al menú de series después de modificar
         this.$router.push('/menu-series');
       } catch (err) {
         console.error(err);

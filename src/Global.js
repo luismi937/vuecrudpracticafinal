@@ -1,5 +1,8 @@
+// Módulo Global: funciones auxiliares para llamadas HTTP relacionadas con series y personajes
+// Usamos axios aquí para operaciones REST contra la API principal.
 import axios from 'axios';
 
+// URL base de la API (sin la ruta /api/ en caso de que se construyan URLs completas fuera)
 const API_BASE = 'https://apiseriespersonajes.azurewebsites.net';
 
 export default {
@@ -15,6 +18,7 @@ export default {
   },
 
   // Crear un personaje nuevo en una serie
+  // serieUrl: URL base de la serie; personaje: { nombre, ... }
   async crearPersonaje(serieUrl, personaje) {
     try {
       const response = await axios.post(serieUrl + '/personajes', personaje);
@@ -26,6 +30,7 @@ export default {
   },
 
   // Modificar un personaje usando la URL de la serie
+  // personaje debe contener la propiedad id
   async modificarPersonaje(serieUrl, personaje) {
     try {
       const response = await axios.put(`${serieUrl}/personajes/${personaje.id}`, personaje);
@@ -36,7 +41,7 @@ export default {
     }
   },
 
-  // Obtener detalle de una serie
+  // Obtener detalle de una serie a partir de su URL
   async obtenerSerie(serieUrl) {
     try {
       const response = await axios.get(serieUrl);
@@ -47,7 +52,7 @@ export default {
     }
   },
 
-  // Obtener todas las series
+  // Obtener todas las series desde la API central
   async obtenerSeries() {
     try {
       const response = await axios.get(`${API_BASE}/series`);

@@ -1,4 +1,9 @@
 <template>
+  <!--
+    Componente: NuevoPersonaje
+    Propósito: Formulario para crear un nuevo personaje y asignarlo a una serie.
+    Comportamiento: carga las series disponibles y envía el personaje al servicio para insertarlo.
+  -->
   <div class="form-container">
     <h2>Crear Nuevo Personaje</h2>
     <form @submit.prevent="handleSubmit">
@@ -28,13 +33,16 @@ export default {
     }
   },
   async mounted() {
+    // Obtener las series disponibles para poder asignarlas al nuevo personaje
     this.series = await SeriesServices.getSeries();
   },
   methods: {
     async handleSubmit() {
       try {
+        // Llamar al servicio para crear el personaje
         await SeriesServices.insertPersonaje({ nombre: this.nombre, serieId: this.serieId });
         alert("Personaje creado!");
+        // Redirigir al listado de series
         this.$router.push('/menu-series');
       } catch (err) {
         console.error(err);

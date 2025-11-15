@@ -1,4 +1,5 @@
 <template>
+  <!-- Componente de ejemplo generado por la plantilla de Vue CLI. Sirve como referencia e información útil sobre el proyecto. -->
   <div class="hello">
     <h1>{{ msg }}</h1>
     <p>
